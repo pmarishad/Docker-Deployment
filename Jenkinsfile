@@ -13,4 +13,25 @@ node{
 		echo "Build has been Done...!"
 	}
 
+	// Renaming the build 
+	stage('Renaming'){
+		sh "mv target/*.war target/myapp.war"
+	}
+
+	// Creating the Docker Image from Dockerfile
+	stage('Docker_Image_Creation'){
+		def dockerImage = "docker build -t pmarishad/myapp:v1.0 ."
+		sh "${dockerImage}"
+	}
+
+	// Docker push
+	stage('Docker_Push_to_DockerHub'){
+		withCredentials([string(credentialsId: 'dockerHub', variable: 'dockerLogin')]) {
+    	// some block
+    	sh "docker login -u pmarishad -p ${dockerLogin}"
+    	echo "Login Success..!"
+    	sh 'docker push pmarishad/myapp:v1.0'
+		}
+
+	}
 }
